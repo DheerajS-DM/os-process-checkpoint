@@ -1,0 +1,44 @@
+# C / Build Artifacts
+build/
+bin/
+obj/
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+*.a
+*.out
+
+# Checkpoint & Dump files
+checkpoints/*.ckpt
+checkpoints/*.tmp
+*.ckpt
+*.tmp
+test_run.ckpt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+env/
+ENV/
+
+# Logs & Temporary Files
+*.log
+*.swp
+*.swo
+*~
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
