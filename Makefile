@@ -1,8 +1,16 @@
-CC       = gcc
-CFLAGS   = -Wall -Wextra -O2 -std=c11 -D_GNU_SOURCE -Iinclude
-LDFLAGS  = -lrt -lpthread -lm
+UNAME_S := $(shell uname -s)
 
-WORKER_CFLAGS = $(CFLAGS) -no-pie
+ifeq ($(UNAME_S),Darwin)
+    CC       = clang
+    CFLAGS   = -Wall -Wextra -O2 -std=c11 -D_DARWIN_C_SOURCE -Iinclude
+    LDFLAGS  = -lpthread -lm
+    WORKER_CFLAGS = $(CFLAGS)
+else
+    CC       = gcc
+    CFLAGS   = -Wall -Wextra -O2 -std=c11 -D_GNU_SOURCE -Iinclude
+    LDFLAGS  = -lrt -lpthread -lm
+    WORKER_CFLAGS = $(CFLAGS) -no-pie
+endif
 
 BUILD_DIR = build
 

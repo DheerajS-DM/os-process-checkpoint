@@ -64,6 +64,7 @@ class ShmReader:
         self.struct_size = ctypes.sizeof(TelemetryShmStruct)
         self.candidate_paths = [
             "/dev/shm/wsl_telemetry",
+            "/tmp/wsl_telemetry.shm",
             rf"\\wsl.localhost\{distro_name}\dev\shm\wsl_telemetry",
             rf"\\wsl$\{distro_name}\dev\shm\wsl_telemetry",
         ]

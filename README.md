@@ -499,7 +499,27 @@ $$\text{RPO} = t_{\text{crash}} - t_{\text{last\_checkpoint}} \quad (\le \text{C
 .\venv\Scripts\python.exe dashboard\main.py
 ```
 
-### 3. Manual Linux/WSL Execution
+### 3. Native macOS Execution (Apple Silicon & Intel)
+The system runs 100% natively on Darwin without WSL or virtualization.
+
+```bash
+# Make the deployment runner executable
+chmod +x deploy_mac.sh
+
+# Run compilation and all unit tests natively via Clang
+./deploy_mac.sh --test
+
+# Launch the C supervisor daemon (native Darwin POSIX)
+./deploy_mac.sh --start
+
+# Launch the PyQt6 Telemetry & Control Dashboard in Aqua GUI
+./deploy_mac.sh --gui
+
+# Or run the entire stack end-to-end (build, test, daemon & GUI)
+./deploy_mac.sh --all
+```
+
+### 4. Manual Linux/WSL Execution
 ```bash
 # Compile all binaries with -O2 optimization
 make clean && make all
@@ -511,7 +531,7 @@ make test
 ./build/supervisor --workers 4 --heap-mb 256 --checkpoint-interval 4000
 ```
 
-### 4. Verification Checkpoints
+### 5. Verification Checkpoints
 - **Unit Tests**: Confirm `test_mprotect`, `test_scheduler`, and `test_checkpoint` output `[PASS] 100% tests passed`.
 - **Live Memory Waveform**: Verify the curve climbs smoothly as workers compute and drops to $0\text{ MB}$ at each 4-second checkpoint.
 - **Chaos Injection**: Click "Trigger OOB Crash" or "Inject SIGKILL" on Page 3; verify that the supervisor auto-resurrects the worker within $< 5.0\text{ ms}$ (RTO) and resumes execution without engine failure.

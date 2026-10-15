@@ -1,8 +1,14 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#if defined(__APPLE__)
+#ifndef _DARWIN_C_SOURCE
+#define _DARWIN_C_SOURCE
+#endif
+#else
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #endif
 
 #include <stdio.h>
@@ -15,12 +21,28 @@
 #include <time.h>
 #include <sys/types.h>
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if defined(TARGET_CPU_ARM64) && TARGET_CPU_ARM64
+#define PAGE_SIZE_BYTES       16384
+#define UNLOCK_BLOCK_PAGES    4         /* 4 * 16 KB = 64 KB block unlock */
+#define MAX_HEAP_PAGES        32768     /* 512 MB / 16 KB = 32,768 pages */
+#else
 #define PAGE_SIZE_BYTES       4096
+#define UNLOCK_BLOCK_PAGES    16        /* 16 * 4 KB = 64 KB block unlock */
+#define MAX_HEAP_PAGES        131072    /* 512 MB / 4 KB = 131,072 pages */
+#endif
+#define SHM_FILE_PATH         "/tmp/wsl_telemetry.shm"
+#else
+#define PAGE_SIZE_BYTES       4096
+#define UNLOCK_BLOCK_PAGES    16        /* 16 * 4 KB = 64 KB block unlock */
+#define MAX_HEAP_PAGES        131072    /* 512 MB / 4 KB = 131,072 pages */
+#define SHM_FILE_PATH         "/dev/shm/wsl_telemetry"
+#endif
+
 #define MAX_WORKERS           8
 #define DEFAULT_HEAP_MB       512
-#define MAX_HEAP_PAGES        131072    /* 512 MB / 4 KB = 131,072 pages */
-#define HEATMAP_BUCKETS       4096      /* 131072 / 32 = 4096 coarse blocks */
-#define UNLOCK_BLOCK_PAGES    16        /* 64 KB block unlock per fault mitigation */
+#define HEATMAP_BUCKETS       4096      /* 4096 coarse blocks */
 
 #define SHM_NAME              "/wsl_telemetry"
 #define SEM_NAME              "/wsl_telem_sem"

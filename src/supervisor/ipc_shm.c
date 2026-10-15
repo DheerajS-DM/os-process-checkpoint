@@ -9,14 +9,23 @@ static sem_t *g_sem = NULL;
 int ipc_shm_init_master(telemetry_shm_t **out_shm) {
     if (!out_shm) return -1;
     
+#if defined(__APPLE__)
+    unlink(SHM_FILE_PATH);
+    sem_unlink(SEM_NAME);
+    int fd = open(SHM_FILE_PATH, O_CREAT | O_RDWR | O_TRUNC, 0666);
+    if (fd < 0) {
+        LOG_E("SHM", "open(%s) failed: %s", SHM_FILE_PATH, strerror(errno));
+        return -1;
+    }
+#else
     shm_unlink(SHM_NAME);
     sem_unlink(SEM_NAME);
-    
     int fd = shm_open(SHM_NAME, O_CREAT | O_RDWR | O_TRUNC, 0666);
     if (fd < 0) {
         LOG_E("SHM", "shm_open failed: %s", strerror(errno));
         return -1;
     }
+#endif
     
     size_t size = sizeof(telemetry_shm_t);
     if (ftruncate(fd, size) < 0) {
@@ -43,14 +52,22 @@ int ipc_shm_init_master(telemetry_shm_t **out_shm) {
     }
     
     *out_shm = shm;
+#if defined(__APPLE__)
+    LOG_I("SHM", "Initialized Darwin file-mapped shared memory %s (size=%zu KB)", SHM_FILE_PATH, size / 1024);
+#else
     LOG_I("SHM", "Initialized POSIX shared memory bridge %s (size=%zu KB)", SHM_NAME, size / 1024);
+#endif
     return 0;
 }
 
 int ipc_shm_open_client(telemetry_shm_t **out_shm, int *out_fd) {
     if (!out_shm) return -1;
     
+#if defined(__APPLE__)
+    int fd = open(SHM_FILE_PATH, O_RDONLY, 0666);
+#else
     int fd = shm_open(SHM_NAME, O_RDONLY, 0666);
+#endif
     if (fd < 0) return -1;
     
     size_t size = sizeof(telemetry_shm_t);
@@ -80,7 +97,11 @@ void ipc_shm_cleanup_master(telemetry_shm_t *shm) {
     if (shm && shm != MAP_FAILED) {
         munmap(shm, sizeof(telemetry_shm_t));
     }
+#if defined(__APPLE__)
+    unlink(SHM_FILE_PATH);
+#else
     shm_unlink(SHM_NAME);
+#endif
     if (g_sem && g_sem != SEM_FAILED) {
         sem_close(g_sem);
         sem_unlink(SEM_NAME);

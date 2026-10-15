@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
-
-SOURCE_DIR="/mnt/c/Users/Dheeraj Sutram/Documents/projects/OS/tanmay"
-TARGET_DIR="$HOME/tanmay"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SOURCE_DIR="${SOURCE_DIR:-$SCRIPT_DIR}"
+TARGET_DIR="${TARGET_DIR:-$HOME/tanmay}"
 
 echo ">>> Syncing files from Windows to Linux workspace..."
 mkdir -p "$TARGET_DIR"

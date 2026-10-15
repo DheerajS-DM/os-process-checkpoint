@@ -3,7 +3,11 @@
 
 #include "common.h"
 #include "dirty_tracker.h"
+#if defined(__APPLE__)
+#include <sys/ucontext.h>
+#else
 #include <ucontext.h>
+#endif
 
 #pragma pack(push, 1)
 typedef struct {

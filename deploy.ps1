@@ -10,7 +10,7 @@ $DriveLetter = $WinPath.Substring(0,1).ToLower()
 $WslMount = "/mnt/" + $DriveLetter + "/" + $WinPath.Substring(3).Replace('\', '/')
 
 Write-Host ">>> Executing build and test via WSL ($Distro)..." -ForegroundColor Cyan
-wsl -d $Distro bash -c "bash `"$WslMount/build_and_test.sh`""
+wsl -d $Distro -- bash "$WslMount/build_and_test.sh"
 
 if ($Start) {
     Write-Host ">>> Launching Supervisor Daemon..." -ForegroundColor Magenta

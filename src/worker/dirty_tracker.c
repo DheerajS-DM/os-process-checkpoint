@@ -1,7 +1,11 @@
 #include "dirty_tracker.h"
 #include <sys/mman.h>
 #include <signal.h>
+#if defined(__APPLE__)
+#include <sys/ucontext.h>
+#else
 #include <ucontext.h>
+#endif
 
 dirty_tracker_t *g_active_tracker = NULL;
 
